@@ -53,7 +53,7 @@ class LazyImportGroup:
     >>> pak.dopak()  # triggers pip install -r requirements.txt
     hello fuzzywuzzy
 
-    >>> pak.bar.dobar()  # module is already loaded
+    >>> pak.bar.dobar()  # dependencies already resolved; no installation
     hello msgpack
 
     Raw `import` of a lazily-imported module outside the context manager is illegal when the requirements are not
