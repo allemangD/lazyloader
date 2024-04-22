@@ -20,6 +20,7 @@ import importlib.util
 def pip(args):
     subprocess.run(["pip"] + args, stdout=subprocess.PIPE)
 
+
 EXTRA_PIP_ARGS = [
     "--quiet",
 ]
@@ -170,7 +171,18 @@ class LazyImportGroup:
 
         with importlib.resources.as_file(resource) as requires:
             with tempfile.NamedTemporaryFile("r") as freport:
-                pip(["install", *EXTRA_PIP_ARGS, "--dry-run", "--no-deps", "--report", freport.name, "-r", str(requires)])
+                pip(
+                    [
+                        "install",
+                        *EXTRA_PIP_ARGS,
+                        "--dry-run",
+                        "--no-deps",
+                        "--report",
+                        freport.name,
+                        "-r",
+                        str(requires),
+                    ]
+                )
                 report = json.load(freport)
 
             # todo use slicer.util.confirmOkCancelDisplay to show install summary and abort install if user opts out
