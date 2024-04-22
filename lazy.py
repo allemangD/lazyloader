@@ -166,20 +166,19 @@ class LazyImportGroup:
         pak, _, req = self.requires.rpartition(":")
         spec = importlib.util.find_spec(pak)
         dummy = importlib.util.module_from_spec(spec)
-        requires = importlib.resources.files(dummy).joinpath(req)
+        resource = importlib.resources.files(dummy).joinpath(req)
 
-        with tempfile.NamedTemporaryFile("r") as freport:
-            pip(["install", *EXTRA_PIP_ARGS, "--dry-run", "--no-deps", "--report", freport.name, "-r", str(requires)])
-            report = json.load(freport)
+        with importlib.resources.as_file(resource) as requires:
+            with tempfile.NamedTemporaryFile("r") as freport:
+                pip(["install", *EXTRA_PIP_ARGS, "--dry-run", "--no-deps", "--report", freport.name, "-r", str(requires)])
+                report = json.load(freport)
 
-        # todo use slicer.util.confirmOkCancelDisplay to show install summary and abort install if user opts out
-        for entry in report["install"]:
-            print(
-                "installing {name}=={version} ({summary})".format_map(entry["metadata"]),
-            )
+            # todo use slicer.util.confirmOkCancelDisplay to show install summary and abort install if user opts out
+            for entry in report["install"]:
+                print("installing {name}=={version} ({summary})".format_map(entry["metadata"]))
 
-        if report["install"]:
-            pip(["install", *EXTRA_PIP_ARGS, "-r", str(requires)])
+            if report["install"]:
+                pip(["install", *EXTRA_PIP_ARGS, "-r", str(requires)])
 
         self.need_install = False
 
