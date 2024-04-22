@@ -1,20 +1,24 @@
 """
 Uninstall the packages used for doctests. Run with `python -m doctest lazy.py`
 
->>> _ = pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack"])
+>>> pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack"])
 """
 
-import importlib.abc
-import importlib.machinery
-import importlib.metadata
-import importlib.resources
-import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
 import types
 
-pip = importlib.metadata.entry_points()["pip"].load()
+
+import importlib.abc
+import importlib.machinery
+import importlib.resources
+import importlib.util
+
+
+def pip(args):
+    subprocess.run(["pip"] + args, stdout=subprocess.PIPE)
 
 EXTRA_PIP_ARGS = [
     "--quiet",
