@@ -65,7 +65,22 @@ with LazyImportGroup('pak:itk-demo-requirements.txt'):
 _ = itk.Fpfh.PointFeature.MF3MF3.New()
 ```
 
-See the requriements docs for the full list of features:
+The proxy module and the real module may not be the same, but one can extract the real module from the proxy.
+
+```py
+with LazyImportGroup('pak:requirements.txt'):
+    import fuzzywuzzy.fuzz as lazy_fz
+_ = lazy_fz.ratio  # resolve lazy import
+import fuzzywuzzy.fuzz as real_fz
+
+lazy_fz is real_fz  # False
+lazy_fz.ratio is real_fz.ratio  # True
+real_module(lazy_fz) is real_fz   # True
+```
+
+---
+
+See the requirements.txt docs for the full list of features:
 
 - https://pip.pypa.io/en/stable/reference/requirement-specifiers/
 - https://pip.pypa.io/en/stable/reference/requirements-file-format/

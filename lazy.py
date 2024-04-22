@@ -87,7 +87,21 @@ class LazyImportGroup:
     installing itk-fpfh==0.1.1 (An ITK-based implementation of FPFH ...)
     <itk.itkPointFeaturePython.itkPointFeatureMF3MF3; proxy of ...>
 
-    See the requriements docs for the full list of features:
+    The proxy module and the real module may not be the same, but one can extract the real module from the proxy.
+
+    >>> with LazyImportGroup('pak:requirements.txt'):
+    ...     import fuzzywuzzy.fuzz as lazy_fz
+    >>> _ = lazy_fz.ratio  # resolve lazy import
+    >>> import fuzzywuzzy.fuzz as real_fz
+
+    >>> lazy_fz is real_fz
+    False
+    >>> lazy_fz.ratio is real_fz.ratio
+    True
+    >>> real_module(lazy_fz) is real_fz
+    True
+
+    See the requirements.txt docs for the full list of features:
 
     - https://pip.pypa.io/en/stable/reference/requirement-specifiers/
     - https://pip.pypa.io/en/stable/reference/requirements-file-format/
@@ -196,7 +210,7 @@ class VeryLazyModule(types.ModuleType):
         return getattr(self, attr)
 
 
-def real_module(module: types.ModuleType):
+def real_module(module: types.ModuleType) -> types.ModuleType:
     """Get the real module object from a lazy proxy module."""
     return getattr(module, "__real_module__", module)
 
