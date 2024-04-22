@@ -56,6 +56,15 @@ nspak.foo.dofoo()  # installs requirements and unlocks dependants
 import nspak  # OK
 ```
 
+Importing requirements directly is also possible, but must use a `requirements.txt` resource from some package.
+
+```py
+with LazyImportGroup('pak:itk-demo-requirements.txt'):
+    import itk
+
+_ = itk.Fpfh.PointFeature.MF3MF3.New()
+```
+
 See the requriements docs for the full list of features:
 
 - https://pip.pypa.io/en/stable/reference/requirement-specifiers/

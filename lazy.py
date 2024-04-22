@@ -1,7 +1,7 @@
 """
 Uninstall the packages used for doctests. Run with `python -m doctest lazy.py`
 
->>> pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack"])
+>>> pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack", "itk", "itk-fpfh"])
 """
 
 import json
@@ -76,6 +76,16 @@ class LazyImportGroup:
     hello regex
 
     >>> import nspak  # OK
+
+    Importing requirements directly is also possible, but must use a `requirements.txt` resource from some package.
+
+    >>> with LazyImportGroup('pak:itk-demo-requirements.txt'):
+    ...     import itk
+
+    >>> itk.Fpfh.PointFeature.MF3MF3.New()  # doctest: +ELLIPSIS
+    installing itk==5.3.0 (ITK is an open-source toolkit for multidimensional image analysis)
+    installing itk-fpfh==0.1.1 (An ITK-based implementation of FPFH ...)
+    <itk.itkPointFeaturePython.itkPointFeatureMF3MF3; proxy of ...>
 
     See the requriements docs for the full list of features:
 
