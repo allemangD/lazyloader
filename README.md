@@ -33,14 +33,15 @@ pak.dopak()  # triggers pip install -r requirements.txt
 pak.bar.dobar()  # dependencies already resolved; no installation
 ```
 
-Raw `import` of a lazily-imported module outside the context manager is illegal when the requirements are not
-guaranteed to be satisfied. This is explicitly disabled, so such raw imports will produce `ImportError`, even
-if the dependencies happen to be met in the particular environment. This hels developers catch the error that
-a package might be installed in their environment, but not during first usage on a user's environment.
+Raw `import` of a lazily-imported module outside the context manager is illegal when the requirements are not guaranteed
+to be satisfied. This is explicitly disabled, so such raw imports will produce `ImportError`, even when the dependencies
+happen to be met in the particular environment. This helps developers catch the error that a package may be installed in
+their environment, but not during first usage on a user's environment. If an import using `LazyImportGroup` works in one
+environment, it will work in all of them (or installation will explicitly fail).
 
-Once some module in the import group is resolved, all the dependencies are installed together and the other
-modules in the group are unlocked. This means lazily-imported modules can safely contain raw relative imports
-and top-level dependency imports, since the group dependencies are guaranteed to be met.
+Once any module in the group is resolved: the group's dependencies are installed, raw imports of the group's modules are
+unlocked, and the resolved module is imported. This means lazily-imported modules may contain plain relative imports and
+top-level imports of dependencies, since the entire import group is guarded by dependency resolution.
 
 ```py
 with LazyImportGroup('nspak:requirements.txt'):
@@ -51,9 +52,20 @@ try:
 except ImportError:
     pass
 
-nspak.foo.dofoo()  # installs requirements and unlocks dependants
+nspak.foo.dofoo()  # Installs requirements and unlocks dependants.
 
-import nspak  # OK
+import nspak  # OK. Group is unlocked.
+```
+
+Note that, although all the modules are unlocked together, they are not all _executed_ together.
+
+```py
+with LazyImportGroup('...:requirements.txt'):
+    import A
+    import B
+
+A.foo  # triggers installation; imports A
+B.bar  # imports B
 ```
 
 Importing requirements directly is also possible, but must use a `requirements.txt` resource from some package.

@@ -1,7 +1,7 @@
 """
 Uninstall the packages used for doctests. Run with `python -m doctest lazy.py`
 
->>> pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack", "itk", "itk-fpfh"])
+>>> pip(["uninstall", "-qqy", "fuzzywuzzy", "regex", "msgpack", "itk", "itk-fpfh", "httpx"])
 """
 
 import json
@@ -77,6 +77,23 @@ class LazyImportGroup:
     hello regex
 
     >>> import nspak  # OK
+
+    Note that, although all the modules are unlocked together, they are not all _executed_ together.
+
+    >>> with LazyImportGroup('multi:requirements.txt'):
+    ...     import multi.A
+    ...     import multi.B
+
+    >>> multi.A.foo  # doctest: +ELLIPSIS
+    installing httpx==0.27.0 (The next generation HTTP client.)
+    importing A
+    <function foo at ...>
+
+    >>> multi.B.bar  # doctest: +ELLIPSIS
+    importing B
+    <function bar at ...>
+    >>> multi.A.baz  # doctest: +ELLIPSIS
+    <function baz at ...>
 
     Importing requirements directly is also possible, but must use a `requirements.txt` resource from some package.
 
